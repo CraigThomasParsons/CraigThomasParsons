@@ -239,7 +239,7 @@ GraphSearch.prototype.initialize = function() {
         switch (event.which) {
             case 1:
                 // Left button pressed.
-                //console.log("grid_item ", $(this).attr('x'), $(this).attr('y'));
+                console.log("grid_item ", $(this).attr('x'), $(this).attr('y'));
                 break;
             case 2:
                 // Middle Mouse button pressed.
@@ -250,12 +250,15 @@ GraphSearch.prototype.initialize = function() {
                 let moves = [];
                 // Find intersecting grid_items with units with class unitSelected.
                 const units = document.querySelectorAll('.unitSelected');
+
                 // Unselect css start.
                 gridItems = document.querySelectorAll('.start');
                 gridItems.forEach(gridItem => {
                     gridItem.classList.remove('start');
                 });
                 units.forEach(currentUnit => {
+                    $("#" + currentUnit.id).isMoving = true;
+
                     let unitX = $(currentUnit).offset().left / 16;
                     let unitY =  $(currentUnit).offset().top / 16;
                     let gridItem = document.getElementById('cell_' + unitX + '_' + unitY);
