@@ -46,6 +46,105 @@ document.onkeyup = function (KeyboardEvent) {
 }
 
 /**
+ * There is code here to move a hero unit.
+ * I want to set this up so that if only one unit is selected
+ *  then
+ * That unit acts as a hero unit.
+ * @param {*} KeyboardEvent 
+ */
+document.onkeydown = function(KeyboardEvent) {
+    const HERO_SPEED = 2000;
+    // Stop moving Camera left.
+    if (KeyboardEvent.key === 'a') {
+
+        keyboardState.leftPressedDown = false;
+
+    // Stop moving Camera right.
+    } else if (KeyboardEvent.key === 'd') {
+
+        keyboardState.rightPressedDown = false;
+
+    // Stop moving Camera up.
+    } else if (KeyboardEvent.key === 'w') {
+
+        keyboardState.upPressedDown = false;
+
+    // Stop moving Camera down.
+    } else if (KeyboardEvent.key === 's') {
+
+        keyboardState.downPressedDown = false;
+    }
+
+    if (KeyboardEvent.key === 'Shift') {
+        keyboardState.shiftPressedDown = false;
+    }
+
+    // Move Main Character right.
+    if (KeyboardEvent.key === 'j') {
+        $("#hero").fadeIn(1000);
+        //hero.left -= 16;
+
+        //moveHero(hero.left);
+        $( "#hero" ).animate({
+            left: "-=16",
+        }, HERO_SPEED, function() {
+            // Animation complete.
+            console.log('left movement completed');
+            $("#hero").fadeOut(4000);
+        });
+
+
+    // Move Main Character left.
+    } else if (KeyboardEvent.key === 'l') {
+        $("#hero").fadeIn(1000);
+        // hero.top += 16;
+        $( "#hero" ).animate({
+            left: "+=16",
+        }, HERO_SPEED, function() {
+            // Animation complete.
+            console.log('left movement completed');
+            $("#hero").fadeOut(4000);
+        });
+
+        //moveHero(hero.left);
+    }
+
+    // Move Main Character up.
+    if (KeyboardEvent.key === 'i') {
+        $("#hero").fadeIn(1000);
+
+        $( "#hero" ).animate({
+            top: "-=16",
+        }, HERO_SPEED, function() {
+            // Animation complete.
+            console.log('top movement completed');
+            $("#hero").fadeOut(4000);
+        });
+
+        //moveHero(hero.left, hero.top);
+
+    // Move Main Character down.
+    } else if (KeyboardEvent.key === 'k') {
+        //hero.top += 16;
+        $("#hero").fadeIn(1000);
+
+        $( "#hero" ).animate({
+            top: "+=16",
+        }, HERO_SPEED, function() {
+            // Animation complete.
+            console.log('top movement completed');
+            $("#hero").fadeOut(4000);
+        });
+
+        //moveHero(hero.left, hero.top);
+    }
+
+    if (KeyboardEvent.key === 'Shift') {
+        keyboardState.shiftPressedDown = true;
+    }
+}
+
+/**
  * The keyboard controls doesn't seem to allow for diagonal movement.
  * @see cameraControls and keyboardState.
  * Created this to work with wasd keys for movement, but it can be reused for other keys in the future
@@ -73,48 +172,87 @@ function moveCameraHorizontally(horizontal) {
     window.scrollTo(window.scrollX + horizontal, window.scrollY);
 }
 
-/**
- * Peasants should move at 80px / 7seconds.
- * Game tics every half second.
- */
-function animateCharacters() {
-    // Todo: implement this function
+function moveUnit(path, unit) {
+    const pathLength = path.length;
+    for (let nodeNumber = 0; nodeNumber < pathLength; nodeNumber++) {
+        //const coord = path[nodeNumber];
+        const coord = path.shift();
+
+        let toTop = (coord.x * 16);
+        let toLeft = (coord.y * 16);
+
+        $( unit ).animate({
+            left: toLeft,
+            top: toTop,
+        }, {
+            duration: 1000,
+            easing: "linear",
+            step: function( now, fx ) {
+                let $unit = $( fx.elem );
+                let selectedIndicators = document.getElementsByName(unit.getAttribute('id'));
+                for (let index = 0; index < selectedIndicators.length; index++) {
+                    if (selectedIndicators[index].style === undefined) {
+                        selectedIndicators[index].style = {};
+                    }
+                    selectedIndicators[index].style.left = $unit.offset().left + 'px';
+                    selectedIndicators[index].style.top = $unit.offset().top + 'px';
+                }
+            }
+        });
+    }
 }
 
 /**
  * @param {*} path
  * @param {*} unit
+ * 
+ * I want to redo this correctly with requestAnimationFrame
+ * https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame
  */
-function moveUnit(path, unit) {
-
-    const intervalValue = 1000;
-
-    let peasant = userPeasants.get(unit.getAttribute('id'));
-    let coord = {};
-
-    for (let index = 0; index < path.length; index++) {
-        coord = path[index];
-        let toTop = (coord.x * 16);
-        let toLeft = (coord.y * 16);
-
-        intervalId = setInterval(function () {
-            // The peasant until they can't move anymore.
-            if (peasant.moveTo(toTop, toLeft) === false) {
-                console.log('Stopping');
-                clearInterval(intervalId);
-            }
-        }, intervalValue);
-    }
+function moveUnitBroken(path, unit) {
 
 
-    function unitMovement() {
-        // The peasant until they can't move anymore.
-        if (peasant.moveTo(toTop, toLeft) === false) {
-            console.log('Stopping');
-            clearInterval(intervalId);
-        }
-    }
 
+
+
+    // function moveUnitToCoord(path, unit, ) {
+    //     const coord = path.shift();
+
+    //     const intervalValue = 1000;
+
+    //     let peasant = userPeasants.get(unit.getAttribute('id'));
+    //     let coord = {};
+
+    //     let pathNumber = 0;
+    //     const pathLength = path.length;
+    
+    //     while (pathNumber <= pathLength) {
+    
+    
+    //         pathNumber++;
+    
+    //         console.log(coord);
+    //         let toTop = (coord.x * 16);
+    //         let toLeft = (coord.y * 16);
+
+    //         // The peasant until they can't move anymore.
+    //         if (peasant.moveTo(toTop, toLeft) === false) {
+    //             console.log('Stopping');
+    //             clearInterval(intervalId);
+    //         }
+
+    //     }
+    
+
+
+    //     // The peasant until they can't move anymore.
+    //     if (peasant.moveTo(toTop, toLeft) === false) {
+    //         console.log('Stopping');
+    //         clearInterval(intervalId);
+    //     }
+    // }
+
+    //intervalId = setInterval();
     // console.log('peasant', peasant); 
     // console.log('unit', unit);
     // console.log('path', path);
@@ -137,34 +275,34 @@ function createEnum(values) {
 /**
  * Old method of animating movement, I can't figure out how to interrupt it so I'm putting this on the backburner
  */
-function jQueryAnimate() {
-    for (let nodeNumber = 0; nodeNumber < path.length; nodeNumber++) {
-        const coord = path[nodeNumber];
-        let toTop = (coord.x * 16);
-        let toLeft = (coord.y * 16);
+// function jQueryAnimate() {
+//     for (let nodeNumber = 0; nodeNumber < path.length; nodeNumber++) {
+//         const coord = path[nodeNumber];
+//         let toTop = (coord.x * 16);
+//         let toLeft = (coord.y * 16);
 
-        console.log('Moving to ', coord)
+//         console.log('Moving to ', coord)
 
-        $(unit).animate({
-            left: toLeft,
-            top: toTop,
-        }, {
-            duration: 1000,
-            easing: "linear",
-            step: function (now, fx) {
-                let $unit = $(fx.elem);
-                let selectedIndicators = document.getElementsByName(unit.getAttribute('id'));
-                for (let index = 0; index < selectedIndicators.length; index++) {
-                    if (selectedIndicators[index].style === undefined) {
-                        selectedIndicators[index].style = {};
-                    }
-                    selectedIndicators[index].style.left = $unit.offset().left + 'px';
-                    selectedIndicators[index].style.top = $unit.offset().top + 'px';
-                }
-            }
-        });
-    }
-}
+//         $(unit).animate({
+//             left: toLeft,
+//             top: toTop,
+//         }, {
+//             duration: 1000,
+//             easing: "linear",
+//             step: function (now, fx) {
+//                 let $unit = $(fx.elem);
+//                 let selectedIndicators = document.getElementsByName(unit.getAttribute('id'));
+//                 for (let index = 0; index < selectedIndicators.length; index++) {
+//                     if (selectedIndicators[index].style === undefined) {
+//                         selectedIndicators[index].style = {};
+//                     }
+//                     selectedIndicators[index].style.left = $unit.offset().left + 'px';
+//                     selectedIndicators[index].style.top = $unit.offset().top + 'px';
+//                 }
+//             }
+//         });
+//     }
+// }
 
 /**
  * Finds the className unitSelected in the class list and removes it.
@@ -318,7 +456,7 @@ class Peasant {
 
         this.element.style.left = (parseInt(this.element.style.left) - pxSpeed) + 'px';
 
-        console.log("Moving Right");
+        console.log("Moving Left");
 
         return this;
     };
@@ -330,7 +468,7 @@ class Peasant {
 
         this.element.style.left = (parseInt(this.element.style.left) + pxSpeed) + 'px';
 
-        console.log("Moving Left");
+        console.log("Moving Right");
 
         return this;
     };
